@@ -5,7 +5,7 @@ import SunCalc from "https://cdn.jsdelivr.net/npm/suncalc/+esm";
 ---------------------------------------------- */
 const UPDATE_INTERVAL_SEC = 1;      // update every second
 const CO2_PER_KWH = 0.453;          // kg / kWh (national avg)
-const NOISE_RANGE = 0.03;           // ±3 % visual noise
+const NOISE_RANGE = 0.006;           // ±0.6 % visual noise
 
 // monthly average daily generation for 1 kW array (kWh/day)
 const monthlyIrr = [2.86,3.28,3.50,3.90,3.90,3.29,3.48,3.76,3.40,3.20,2.70,2.65];
