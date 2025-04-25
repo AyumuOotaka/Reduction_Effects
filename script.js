@@ -17,11 +17,12 @@ let records = [];          // site records from CSV
 let totalGen = 0;          // cumulative kWh (deterministic)
 
 /* ----------------------------------------------
-   Helper : number formatting with thousand separators + unit
+   Helper : number formatting with thousand separators + optional unit (no parentheses)
 ---------------------------------------------- */
-function fmt(val, dec, unit){
-  return parseFloat(val).toLocaleString('en-US',
-          {minimumFractionDigits:dec, maximumFractionDigits:dec}) + ` (${unit})`;
+function fmt(val, dec, unit=""){
+  const num = parseFloat(val).toLocaleString('en-US',
+              {minimumFractionDigits:dec, maximumFractionDigits:dec});
+  return unit ? `${num} ${unit}` : num;
 }
 
 /* ----------------------------------------------
@@ -184,7 +185,7 @@ function initSiteList(){
   records.forEach(rec=>{
     const li = document.createElement('li');
     li.id = 'site-'+rec.id;
-    li.textContent = `${rec.location}: -- (kW)`;
+    li.textContent = `${rec.location}: -- kW`;
     ul.appendChild(li);
   });
 }
