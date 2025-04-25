@@ -1,181 +1,192 @@
 import SunCalc from "https://cdn.jsdelivr.net/npm/suncalc/+esm";
 
 /* ----------------------------------------------
-   コンフィグ
+   CONFIG
 ---------------------------------------------- */
-const UPDATE_INTERVAL_SEC = 1;      // 1秒ごとに更新
-const CO2_PER_KWH = 0.453;          // kg / kWh (国内平均係数)
+const UPDATE_INTERVAL_SEC = 1;      // update every second
+const CO2_PER_KWH = 0.453;          // kg / kWh (national avg)
+const NOISE_RANGE = 0.03;           // ±3 % visual noise
 
-// 月別 1kW あたり平均発電量 (kWh/日)
+// monthly average daily generation for 1 kW array (kWh/day)
 const monthlyIrr = [2.86,3.28,3.50,3.90,3.90,3.29,3.48,3.76,3.40,3.20,2.70,2.65];
 
 /* ----------------------------------------------
-   グローバル変数
+   STATE
 ---------------------------------------------- */
-let records = [];    // CSVの拠点一覧
-let totalGen = 0;    // 累計発電量 (kWh)
+let records = [];          // site records from CSV
+let totalGen = 0;          // cumulative kWh (deterministic)
 
 /* ----------------------------------------------
-   CSV 読み込み
+   CSV LOAD
 ---------------------------------------------- */
 fetch('ref.csv')
   .then(r => r.text())
   .then(parseCsv)
   .then(data => {
     records = data;
-    calcInitialTotals();   // ← StartDate から現在までの累積を一気に計算
+    calcInitialTotals();
     initSiteList();
-    update();                        // まず1回描画
-    setInterval(update, UPDATE_INTERVAL_SEC * 1000); // 秒ごと更新
+    update();                             // first paint
+    setInterval(update, UPDATE_INTERVAL_SEC * 1000);
   });
 
 function parseCsv(txt){
   const [headerLine, ...lines] = txt.trim().split(/\r?\n/);
   const headers = headerLine.split(',');
-  return lines.map(line => {
+  return lines.map(line=>{
     const cols = line.split(',');
-    return headers.reduce((obj, h, idx) => {
-      const v = cols[idx];
-      obj[h] = isNaN(v) || h === 'start_date' || h === 'location' ? v : Number(v);
-      return obj;
-    }, {});
+    return headers.reduce((o,h,i)=>{
+      const v = cols[i];
+      // numeric except location and start_date
+      o[h] = (h==='location' || h==='start_date') ? v : Number(v);
+      return o;
+    },{});
   });
 }
 
 /* ----------------------------------------------
-   初期トータル算出
+   INITIAL TOTAL (start_date -> now)
+   fast monthly accumulation + today's partial
 ---------------------------------------------- */
 function calcInitialTotals(){
   const now = new Date();
   const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-  records.forEach(rec => {
+  records.forEach(rec=>{
     const start = new Date(rec.start_date);
-    if (start > now) return;   // future start
+    if(start > now) return;
 
-    // ① StartDate から "昨日" までを月単位一気に足す
+    // Month-wise accumulate
     let ptr = new Date(start.getFullYear(), start.getMonth(), 1);
-    while (ptr < todayMidnight){
+    while(ptr < todayMidnight){
       const y = ptr.getFullYear();
       const m = ptr.getMonth();
       const daysInMonth = new Date(y, m+1, 0).getDate();
 
-      // 範囲内で何日加算するか
-      const fromDay = (y === start.getFullYear() && m === start.getMonth()) ? start.getDate() : 1;
-      const toDay   = (y === now.getFullYear()   && m === now.getMonth())   ? now.getDate()-1 : daysInMonth;
-
+      const fromDay = (y===start.getFullYear() && m===start.getMonth()) ? start.getDate() : 1;
+      const toDay   = (y===now.getFullYear() && m===now.getMonth())     ? now.getDate()-1 : daysInMonth;
       const days = Math.max(0, toDay - fromDay + 1);
-      if(days){
-          totalGen += rec.panel_capacity_kw * monthlyIrr[m] * days;
-      }
 
-      // 次の月へ
+      if(days){
+        totalGen += rec.panel_capacity_kw * monthlyIrr[m] * days;
+      }
       ptr.setMonth(ptr.getMonth()+1);
     }
 
-    // ② 今日分（0:00〜現在時刻まで）を時間係数で加算
-    const factors = getHourlyFactor(rec.lat, rec.lon, now);
-    const monthIdx = now.getMonth();
-    const kwhPerFactor = rec.panel_capacity_kw * (monthlyIrr[monthIdx] / 24);
+    // Today's partial using hourly factors
+    const f = getHourlyFactor(rec.lat, rec.lon, now);
+    const mIdx = now.getMonth();
+    const kwhPerFactor = rec.panel_capacity_kw * (monthlyIrr[mIdx] / 24);
 
-    let hoursDoneEnergy = 0;
-    for(let h = 0; h < now.getHours(); h++){
-      hoursDoneEnergy += kwhPerFactor * factors[h];
+    let energyToday = 0;
+    for(let h=0; h<now.getHours(); h++){
+      energyToday += kwhPerFactor * f[h];
     }
-    // 現在進行中の1時間については経過率をかける
     const secInHour = now.getMinutes()*60 + now.getSeconds();
     const frac = secInHour / 3600;
-    hoursDoneEnergy += kwhPerFactor * factors[now.getHours()] * frac;
+    energyToday += kwhPerFactor * f[now.getHours()] * frac;
 
-    totalGen += hoursDoneEnergy;
+    totalGen += energyToday;
   });
 }
 
 /* ----------------------------------------------
-   1秒ごと更新処理
+   PER‑SECOND UPDATE
 ---------------------------------------------- */
 function update(){
-  const now = new Date();
-  const h = now.getHours();
-  const mIdx = now.getMonth();
+  const now   = new Date();
+  const hour  = now.getHours();
+  const frac  = (now.getMinutes()*60 + now.getSeconds()) / 3600;   // position within the hour
+  const monthIdx = now.getMonth();
 
-  let currentGenKW = 0;
-  records.forEach(rec => {
-    const factor = getHourlyFactor(rec.lat, rec.lon, now)[h];
-    const kW = rec.panel_capacity_kw * (factor * (monthlyIrr[mIdx] / 24));
-    rec._lastGenKW = kW;
-    currentGenKW += kW;
+  let currentKW_det = 0;   // deterministic output
+
+  records.forEach(rec=>{
+    const factors = getHourlyFactor(rec.lat, rec.lon, now);
+    const fNow  = factors[hour];
+    const fNext = factors[(hour+1)%24];
+    const interp = fNow + (fNext - fNow) * frac;                  // ① linear interpolation
+
+    const kW = rec.panel_capacity_kw * (interp * (monthlyIrr[monthIdx] / 24));
+    rec._lastGenKW_det = kW;
+    currentKW_det += kW;
   });
 
-  // エネルギー量 = 出力(kW) * 秒 / 3600
-  totalGen += currentGenKW * (UPDATE_INTERVAL_SEC / 3600);
+  /* accumulate deterministic energy */
+  totalGen += currentKW_det * (UPDATE_INTERVAL_SEC / 3600);
   const co2 = totalGen * CO2_PER_KWH;
 
-  // UI
-  document.getElementById('now-time').textContent        = now.toLocaleTimeString();
-  document.getElementById('current-generation').textContent = currentGenKW.toFixed(3);
-  document.getElementById('total-generation').textContent   = totalGen.toFixed(2);
-  document.getElementById('co2-reduction').textContent      = co2.toFixed(2);
+  /* -------- visual noise (②) ---------- */
+  const noiseFactor = 1 + (Math.random() - 0.5) * NOISE_RANGE;  // ±NOISE_RANGE/2
+  const displayKW   = currentKW_det * noiseFactor;
 
-  updateSiteList();
+  /* -------- UI update ---------- */
+  document.getElementById('now-time').textContent          = now.toLocaleTimeString();
+  document.getElementById('current-generation').textContent= displayKW.toFixed(3);
+  document.getElementById('total-generation').textContent  = totalGen.toFixed(2);
+  document.getElementById('co2-reduction').textContent     = co2.toFixed(2);
+
+  updateSiteList();      // with noise
   updateBackground(now);
 }
 
 /* ----------------------------------------------
-   時間係数 (SunCalc + 三角分布)
+   HOURLY FACTOR (SunCalc + triangular)
 ---------------------------------------------- */
-const factorCache = new Map(); // key=lat,lon,month
+const factorCache = new Map();
 
-function getHourlyFactor(lat, lon, dateObj){
-  const key = lat+','+lon+','+dateObj.getMonth();
+function getHourlyFactor(lat, lon, refDate){
+  const key = lat + ',' + lon + ',' + refDate.getMonth();
   if(factorCache.has(key)) return factorCache.get(key);
 
-  const midMonthDate = new Date(dateObj.getFullYear(), dateObj.getMonth(), 15);
-  const { sunrise, sunset } = SunCalc.getTimes(midMonthDate, lat, lon);
-
+  const mid = new Date(refDate.getFullYear(), refDate.getMonth(), 15);
+  const { sunrise, sunset } = SunCalc.getTimes(mid, lat, lon);
   const sH = sunrise.getHours() + sunrise.getMinutes()/60;
   const eH = sunset.getHours()  + sunset.getMinutes()/60;
-  const dayLen = eH - sH;
   const peak = (sH + eH) / 2;
+  const span = eH - sH;
 
   let arr = Array(24).fill(0);
   let sum = 0;
   for(let h=0; h<24; h++){
     const center = h + 0.5;
     if(center < sH || center > eH) continue;
-    const rel = 1 - Math.abs(center - peak) / (dayLen / 2);
+    const rel = 1 - Math.abs(center - peak) / (span / 2);
     arr[h] = Math.max(0, rel);
     sum += arr[h];
   }
-  arr = arr.map(v => v * 24 / sum); // normalize to 24
+  arr = arr.map(v => v * 24 / sum);  // normalize
   factorCache.set(key, arr);
   return arr;
 }
 
 /* ----------------------------------------------
-   背景切替
+   BACKGROUND DAY / NIGHT
 ---------------------------------------------- */
 function updateBackground(now){
-  const hr = now.getHours();
-  document.body.className = (hr>=6 && hr<18) ? 'daytime' : 'nighttime';
+  const h = now.getHours();
+  document.body.className = (h>=6 && h<18) ? 'daytime' : 'nighttime';
 }
 
 /* ----------------------------------------------
-   サイトリストUI
+   SITE LIST
 ---------------------------------------------- */
 function initSiteList(){
   const ul = document.getElementById('site-list');
   records.forEach(rec=>{
     const li = document.createElement('li');
-    li.id = 'site-' + rec.id;
-    li.textContent = `${rec.location}: - kW`;
+    li.id = 'site-'+rec.id;
+    li.textContent = `${rec.location}: -- kW`;
     ul.appendChild(li);
   });
 }
 
 function updateSiteList(){
   records.forEach(rec=>{
-    const li = document.getElementById('site-' + rec.id);
-    if(li) li.textContent = `${rec.location}: ${rec._lastGenKW.toFixed(3)} kW`;
+    const li = document.getElementById('site-'+rec.id);
+    if(li){
+      const noise = 1 + (Math.random() - 0.5) * NOISE_RANGE;
+      li.textContent = `${rec.location}: ${(rec._lastGenKW_det * noise).toFixed(3)} kW`;
+    }
   });
 }
