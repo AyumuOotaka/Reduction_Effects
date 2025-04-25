@@ -5,7 +5,7 @@ import SunCalc from "https://cdn.jsdelivr.net/npm/suncalc/+esm";
 ---------------------------------------------- */
 const UPDATE_INTERVAL_SEC = 1;      // update every second
 const CO2_PER_KWH = 0.453;          // kg / kWh (national avg)
-const NOISE_RANGE = 0.006;           // ±0.6 % visual noise
+const NOISE_RANGE = 0.004;          // ±0.4 % visual noise 
 
 // monthly average daily generation for 1 kW array (kWh/day)
 const monthlyIrr = [2.86,3.28,3.50,3.90,3.90,3.29,3.48,3.76,3.40,3.20,2.70,2.65];
@@ -15,6 +15,14 @@ const monthlyIrr = [2.86,3.28,3.50,3.90,3.90,3.29,3.48,3.76,3.40,3.20,2.70,2.65]
 ---------------------------------------------- */
 let records = [];          // site records from CSV
 let totalGen = 0;          // cumulative kWh (deterministic)
+
+/* ----------------------------------------------
+   Helper : number formatting with thousand separators + unit
+---------------------------------------------- */
+function fmt(val, dec, unit){
+  return parseFloat(val).toLocaleString('en-US',
+          {minimumFractionDigits:dec, maximumFractionDigits:dec}) + ` (${unit})`;
+}
 
 /* ----------------------------------------------
    CSV LOAD
@@ -122,9 +130,9 @@ function update(){
 
   /* -------- UI update ---------- */
   document.getElementById('now-time').textContent          = now.toLocaleTimeString();
-  document.getElementById('current-generation').textContent= displayKW.toFixed(3);
-  document.getElementById('total-generation').textContent  = totalGen.toFixed(2);
-  document.getElementById('co2-reduction').textContent     = co2.toFixed(2);
+  document.getElementById('current-generation').textContent= fmt(displayKW, 3, 'kW');
+  document.getElementById('total-generation').textContent  = fmt(totalGen, 2, 'kWh');
+  document.getElementById('co2-reduction').textContent     = fmt(co2, 2, 'kg');
 
   updateSiteList();      // with noise
   updateBackground(now);
@@ -176,7 +184,7 @@ function initSiteList(){
   records.forEach(rec=>{
     const li = document.createElement('li');
     li.id = 'site-'+rec.id;
-    li.textContent = `${rec.location}: -- kW`;
+    li.textContent = `${rec.location}: -- (kW)`;
     ul.appendChild(li);
   });
 }
@@ -186,7 +194,7 @@ function updateSiteList(){
     const li = document.getElementById('site-'+rec.id);
     if(li){
       const noise = 1 + (Math.random() - 0.5) * NOISE_RANGE;
-      li.textContent = `${rec.location}: ${(rec._lastGenKW_det * noise).toFixed(3)} kW`;
+      li.textContent = `${rec.location}: ${fmt(rec._lastGenKW_det * noise, 3, 'kW')}`;
     }
   });
 }
