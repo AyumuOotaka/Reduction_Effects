@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>リアルタイム発電・CO₂削減表示</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body{margin:0;font-family:sans-serif;color:#fff;text-shadow:0 0 3px #000;transition:background-image 1s ease}
+    #wrapper{max-width:600px;margin:5vh auto;padding:2rem;background:rgba(0,0,0,.55);border-radius:16px}
+    h1{margin-top:0;font-size:1.6rem}
+    .label{font-weight:bold}
+  </style>
+</head>
+<body class="daytime">
+  <div id="wrapper">
+    <h1>数字で見る OFF&nbsp;GRID&nbsp;WORLD</h1>
+    <p>現在時刻: <span id="now-time">--:--:--</span></p>
+    <p>現在の発電量（kW）: <span id="current-generation">0</span></p>
+    <p>累計発電量（kWh）: <span id="total-generation">0</span></p>
+    <p>削減された CO₂ 量（kg）: <span id="co2-reduction">0</span></p>
+    <hr>
+    <p class="label">拠点一覧</p>
+    <ul id="site-list"></ul>
+  </div>
+
+  <script type="module" src="script.js"></script>
+</body>
+</html>
