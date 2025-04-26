@@ -17,12 +17,13 @@ html,body{
 
 /* ---------- Spacer for embedding ---------- */
 .pre-spacer{
-  height:35vh;          /* smaller spacer */
+  height:35vh;
   background:#FFFBF5;
 }
 
 /* ---------- Metrics Section ---------- */
 .metrics-section{
+  position:relative;
   min-height:100vh;
   background:var(--bg-gradient);
   display:flex;
@@ -30,39 +31,47 @@ html,body{
   align-items:center;
   justify-content:center;
   gap:3rem;
-  position:relative;
   overflow:hidden;
 }
 
-/* ---------- Metric Card ---------- */
-.metric-card{
-  position:relative;
-  z-index:3;
-  background:var(--card-bg);
-  backdrop-filter:blur(6px);
-  padding:2rem 3rem;
-  border-radius:24px;
-  box-shadow:0 10px 20px rgba(0,0,0,0.1);
-  text-align:center;
-  max-width:90vw;
-}
-.metric-card h2{margin:0 0 .5rem;font-size:clamp(1.1rem,6vw,1.8rem);font-weight:600;color:var(--text-main);}
-.metric-card .number{font-size:clamp(2rem,10vw,4rem);font-weight:800;letter-spacing:1px;color:var(--text-main);}
-.metric-card .sub{margin-top:.5rem;font-size:clamp(.8rem,3.5vw,1rem);color:var(--text-main);}
-
-/* ---------- Decorative Waves ---------- */
-.wave-top,.wave-bot{
+/* ---------- Background Waves ---------- */
+.wave-bg,
+.wave-bg-bottom{
   position:absolute;
-  left:0;right:0;width:100%;height:auto;
+  left:0;right:0;
+  width:100%;
+  height:auto;
+  z-index:0;
 }
-.wave-top{top:-1px;z-index:1;animation:floatWave 20s linear infinite;}
-.wave-bot{bottom:-1px;transform:rotate(180deg);z-index:1;}
-@keyframes floatWave{from{transform:translateY(0)}to{transform:translateY(-50%)}}
+.wave-bg{top:-1px;animation:floatWave 20s linear infinite;}
+.wave-bg-bottom{bottom:-1px;transform:rotate(180deg);}
+
+/* Smooth floating */
+@keyframes floatWave{
+  from{transform:translateY(0)}
+  to{transform:translateY(-50%)}
+}
+
+/* ---------- Clouds ---------- */
+.cloud{
+  position:absolute;
+  z-index:1;
+  width:120px;
+  height:60px;
+  background:#fff;
+  border-radius:50px;
+  box-shadow:30px 15px 0 10px #fff,60px 5px 0 5px #fff;
+  opacity:.7;
+  animation:cloudMove 40s linear infinite;
+}
+@keyframes cloudMove{from{transform:translateX(-30%)}to{transform:translateX(130%)}}
 
 /* ---------- Balloons ---------- */
 .balloon{
-  position:absolute;z-index:2;
-  width:60px;height:80px;
+  position:absolute;
+  z-index:2;
+  width:60px;
+  height:80px;
   border-radius:50% 50% 50% 50%/60% 60% 40% 40%;
   box-shadow:inset -4px -8px 10px rgba(0,0,0,0.15);
   animation:float 8s ease-in-out infinite;
@@ -76,17 +85,35 @@ html,body{
 }
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-25px)}}
 
-/* ---------- Clouds ---------- */
-.cloud{
-  position:absolute;z-index:2;
-  width:120px;height:60px;
-  background:#fff;
-  border-radius:50px;
-  box-shadow:30px 15px 0 10px #fff,60px 5px 0 5px #fff;
-  opacity:.7;
-  animation:cloudMove 40s linear infinite;
+/* ---------- Metric Card ---------- */
+.metric-card{
+  position:relative;
+  z-index:3;
+  background:var(--card-bg);
+  backdrop-filter:blur(6px);
+  padding:2rem 3rem;
+  border-radius:24px;
+  box-shadow:0 10px 20px rgba(0,0,0,0.1);
+  text-align:center;
+  max-width:90vw;
 }
-@keyframes cloudMove{from{transform:translateX(-30%)}to{transform:translateX(130%)}}
+.metric-card h2{
+  margin:0 0 .5rem;
+  font-size:clamp(1.1rem,6vw,1.8rem);
+  font-weight:600;
+  color:var(--text-main);
+}
+.metric-card .number{
+  font-size:clamp(2rem,10vw,4rem);
+  font-weight:800;
+  letter-spacing:1px;
+  color:var(--text-main);
+}
+.metric-card .sub{
+  margin-top:.5rem;
+  font-size:clamp(.8rem,3.5vw,1rem);
+  color:var(--text-main);
+}
 
 /* ---------- Responsive ---------- */
 @media(max-width:600px){

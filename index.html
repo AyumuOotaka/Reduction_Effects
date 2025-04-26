@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -9,11 +10,6 @@
 <body>
   <div class="pre-spacer"></div>
 
-  <!-- TOP Wave -->
-  <svg class="wave-top" viewBox="0 0 1440 320" preserveAspectRatio="none">
-    <path fill="#FFFBF5" d="M0,64L48,58.7C96,53,192,43,288,42.7C384,43,480,53,576,64C672,75,768,85,864,112C960,139,1056,181,1152,186.7C1248,192,1344,160,1392,144L1440,128L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"></path>
-  </svg>
-
   <!-- Clouds -->
   <div class="cloud" style="top:20%;left:-20%;animation-duration:50s"></div>
   <div class="cloud" style="top:35%;left:-40%;animation-duration:60s"></div>
@@ -24,6 +20,13 @@
 
   <!-- Metrics Section -->
   <section class="metrics-section" id="metrics-root">
+
+    <!-- Top wave inside section -->
+    <svg class="wave-bg" viewBox="0 0 1440 320" preserveAspectRatio="none">
+      <path fill="#FFFBF5" d="M0,64L48,58.7C96,53,192,43,288,42.7C384,43,480,53,576,64C672,75,768,85,864,112C960,139,1056,181,1152,186.7C1248,192,1344,160,1392,144L1440,128L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"></path>
+    </svg>
+
+    <!-- Metric cards -->
     <div class="metric-card" id="card-total-gen">
       <h2>累計発電量</h2>
       <div class="number" id="total-generation">0 kWh</div>
@@ -39,17 +42,17 @@
       <div class="number" id="current-generation">0 kW</div>
       <p class="sub">⚡ 稼働率 <span id="cap-factor">0</span>%</p>
     </div>
-  </section>
 
-  <!-- Bottom Wave -->
-  <svg class="wave-bot" viewBox="0 0 1440 320" preserveAspectRatio="none">
-    <path fill="#FFFBF5" d="M0,64L48,90.7C96,117,192,171,288,181.3C384,192,480,160,576,149.3C672,139,768,149,864,154.7C960,160,1056,160,1152,160C1248,160,1344,160,1392,160L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
-  </svg>
+    <!-- Bottom wave inside -->
+    <svg class="wave-bg-bottom" viewBox="0 0 1440 320" preserveAspectRatio="none">
+      <path fill="#FFFBF5" d="M0,64L48,90.7C96,117,192,171,288,181.3C384,192,480,160,576,149.3C672,139,768,149,864,154.7C960,160,1056,160,1152,160C1248,160,1344,160,1392,160L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+    </svg>
+  </section>
 
   <!-- Business Logic -->
   <script type="module" src="script.js"></script>
 
-  <!-- Palette & Parallax -->
+  <!-- Palette & simple parallax for top wave -->
   <script>
     const root = document.documentElement;
     function setTimePalette(){
@@ -63,14 +66,13 @@
       root.style.setProperty('--card-bg',cardBg);
       root.style.setProperty('--text-main',text);
     }
-    setTimePalette();
-    setInterval(setTimePalette,1800000);
+    setTimePalette(); setInterval(setTimePalette,1800000);
 
-    const waveTop = document.querySelector('.wave-top');
+    const waveTop=document.querySelector('.wave-bg');
     window.addEventListener('scroll',()=>{
-      const rect = document.getElementById('metrics-root').getBoundingClientRect();
-      const y = rect.top / window.innerHeight;
-      waveTop.style.transform = `translateY(${y*20}px)`;
+      const rect=document.getElementById('metrics-root').getBoundingClientRect();
+      const y=rect.top/window.innerHeight;
+      waveTop.style.transform=`translateY(${y*20}px)`;
     });
   </script>
 </body>
