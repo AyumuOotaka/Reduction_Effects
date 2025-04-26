@@ -10,13 +10,19 @@
 html,body{
   margin:0;
   height:100%;
+  background:#FFFBF5; /* default */
 }
 
 body{
-  background:var(--bg-gradient);
-  overflow-x:hidden;
   font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans JP',sans-serif;
   color:var(--text-main);
+  overflow-x:hidden;
+}
+
+/* spacer so iframe starts below existing site */
+.pre-spacer{
+  height:60vh;           /* tune as needed */
+  background:#FFFBF5;
 }
 
 /* ---------- Metrics Section ---------- */
@@ -28,6 +34,7 @@ body{
   justify-content:center;
   gap:3rem;
   position:relative;
+  background:var(--bg-gradient);
 }
 
 .metric-card{
@@ -53,12 +60,16 @@ body{
   letter-spacing:1px;
   color:var(--text-main);
 }
+.metric-card .sub{
+  margin-top:0.5rem;
+  font-size:clamp(0.8rem,3.5vw,1rem);
+  color:var(--text-main);
+}
 
 /* ---------- Decorative Wave ---------- */
 .wave{
   position:absolute;
-  left:0;
-  right:0;
+  left:0;right:0;
   width:100%;
   height:auto;
   z-index:0;
@@ -66,7 +77,8 @@ body{
 }
 @keyframes floatWave{
   from{transform:translateY(0)}
-  to{transform:translateY(-50%)}}
+  to{transform:translateY(-50%)}
+}
 
 /* ---------- Floating Balloons ---------- */
 .balloon{

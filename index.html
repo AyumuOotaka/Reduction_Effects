@@ -8,6 +8,9 @@
   <link rel="stylesheet" href="design.css">
 </head>
 <body>
+  <!-- Spacer to keep existing site visible -->
+  <div class="pre-spacer"></div>
+
   <!-- SVG Wave connecting above section -->
   <svg class="wave" viewBox="0 0 1440 320" preserveAspectRatio="none">
     <path fill="#FFFBF5" d="M0,64L48,58.7C96,53,192,43,288,42.7C384,43,480,53,576,64C672,75,768,85,864,112C960,139,1056,181,1152,186.7C1248,192,1344,160,1392,144L1440,128L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"></path>
@@ -22,14 +25,17 @@
     <div class="metric-card" id="card-total-gen">
       <h2>累計発電量</h2>
       <div class="number" id="total-generation">0 kWh</div>
+      <p class="sub">🏠 一般家庭 <span id="house-days">0</span> 日分</p>
     </div>
     <div class="metric-card" id="card-co2">
       <h2>削減された CO₂ 量</h2>
       <div class="number" id="co2-reduction">0 kg</div>
+      <p class="sub">🌳 木 <span id="tree-equiv">0</span> 本分の吸収量</p>
     </div>
     <div class="metric-card" id="card-current-gen">
       <h2>現在の発電量</h2>
       <div class="number" id="current-generation">0 kW</div>
+      <p class="sub">⚡ 稼働率 <span id="cap-factor">0</span>%</p>
     </div>
   </section>
 
