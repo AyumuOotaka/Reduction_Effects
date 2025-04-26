@@ -40,17 +40,13 @@ html,body{
   position:absolute;
   left:0;right:0;
   width:100%;
-  height:auto;
+  height:320px;          /* 固定で潰れ防止 */
   z-index:0;
+  will-change:transform;
+  transition:transform 0.1s linear; /* 滑らか */
 }
-.wave-bg{top:-1px;animation:floatWave 20s linear infinite;}
+.wave-bg{top:-1px;}
 .wave-bg-bottom{bottom:-1px;transform:rotate(180deg);}
-
-/* Smooth floating */
-@keyframes floatWave{
-  from{transform:translateY(0)}
-  to{transform:translateY(-50%)}
-}
 
 /* ---------- Clouds ---------- */
 .cloud{

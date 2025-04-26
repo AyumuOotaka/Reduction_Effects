@@ -21,7 +21,7 @@
   <!-- Metrics Section -->
   <section class="metrics-section" id="metrics-root">
 
-    <!-- Top wave inside section -->
+    <!-- Top wave -->
     <svg class="wave-bg" viewBox="0 0 1440 320" preserveAspectRatio="none">
       <path fill="#FFFBF5" d="M0,64L48,58.7C96,53,192,43,288,42.7C384,43,480,53,576,64C672,75,768,85,864,112C960,139,1056,181,1152,186.7C1248,192,1344,160,1392,144L1440,128L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"></path>
     </svg>
@@ -43,7 +43,7 @@
       <p class="sub">⚡ 稼働率 <span id="cap-factor">0</span>%</p>
     </div>
 
-    <!-- Bottom wave inside -->
+    <!-- Bottom wave -->
     <svg class="wave-bg-bottom" viewBox="0 0 1440 320" preserveAspectRatio="none">
       <path fill="#FFFBF5" d="M0,64L48,90.7C96,117,192,171,288,181.3C384,192,480,160,576,149.3C672,139,768,149,864,154.7C960,160,1056,160,1152,160C1248,160,1344,160,1392,160L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
     </svg>
@@ -52,27 +52,29 @@
   <!-- Business Logic -->
   <script type="module" src="script.js"></script>
 
-  <!-- Palette & simple parallax for top wave -->
   <script>
-    const root = document.documentElement;
-    function setTimePalette(){
-      const h = new Date().getHours();
-      let grad,cardBg,text;
-      if(h>=5&&h<8){grad='linear-gradient(180deg,#FFFBF5 0%,#FFE0B2 100%)';cardBg='rgba(255,255,255,0.8)';text='#4B3E2F';}
-      else if(h>=8&&h<17){grad='linear-gradient(180deg,#FDF7EF 0%,#E3F4FF 100%)';cardBg='rgba(255,255,255,0.85)';text='#243B4A';}
-      else if(h>=17&&h<20){grad='linear-gradient(180deg,#FFECD2 0%,#FDB99B 100%)';cardBg='rgba(255,255,255,0.75)';text='#452320';}
-      else{grad='linear-gradient(180deg,#0f2027 0%,#203a43 50%,#2c5364 100%)';cardBg='rgba(255,255,255,0.15)';text='#ffffff';}
-      root.style.setProperty('--bg-gradient',grad);
-      root.style.setProperty('--card-bg',cardBg);
-      root.style.setProperty('--text-main',text);
+    // ----- palette -----
+    const root=document.documentElement;
+    function setPalette(){
+      const h=new Date().getHours();
+      let g,c,t;
+      if(h>=5&&h<8){g='linear-gradient(180deg,#FFFBF5 0%,#FFE0B2 100%)';c='rgba(255,255,255,0.8)';t='#4B3E2F';}
+      else if(h>=8&&h<17){g='linear-gradient(180deg,#FDF7EF 0%,#E3F4FF 100%)';c='rgba(255,255,255,0.85)';t='#243B4A';}
+      else if(h>=17&&h<20){g='linear-gradient(180deg,#FFECD2 0%,#FDB99B 100%)';c='rgba(255,255,255,0.75)';t='#452320';}
+      else{g='linear-gradient(180deg,#0f2027 0%,#203a43 50%,#2c5364 100%)';c='rgba(255,255,255,0.15)';t='#fff';}
+      root.style.setProperty('--bg-gradient',g);
+      root.style.setProperty('--card-bg',c);
+      root.style.setProperty('--text-main',t);
     }
-    setTimePalette(); setInterval(setTimePalette,1800000);
+    setPalette(); setInterval(setPalette,1800000);
 
-    const waveTop=document.querySelector('.wave-bg');
+    // ----- gentle parallax for top wave -----
+    const wave=document.querySelector('.wave-bg');
+    const section=document.getElementById('metrics-root');
     window.addEventListener('scroll',()=>{
-      const rect=document.getElementById('metrics-root').getBoundingClientRect();
-      const y=rect.top/window.innerHeight;
-      waveTop.style.transform=`translateY(${y*20}px)`;
+      const rect=section.getBoundingClientRect();
+      const ratio=Math.max(-0.3,Math.min(0,rect.top/window.innerHeight)); // clamp -0.3..0
+      wave.style.transform=`translateY(${ratio*60}px)`; // max 60px down
     });
   </script>
 </body>
