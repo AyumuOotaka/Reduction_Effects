@@ -1,78 +1,74 @@
 
 <!DOCTYPE html>
-<html lang="ja">
+<html lang=\"ja\">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset=\"UTF-8\">
+  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
   <title>Solar Metrics Section</title>
-  <link rel="stylesheet" href="design.css">
+  <link rel=\"stylesheet\" href=\"design.css\">
 </head>
 <body>
-  <!-- Spacer to keep existing site visible -->
-  <div class="pre-spacer"></div>
+  <div class=\"pre-spacer\"></div>
 
-  <!-- SVG Wave connecting above section -->
-  <svg class="wave" viewBox="0 0 1440 320" preserveAspectRatio="none">
-    <path fill="#FFFBF5" d="M0,64L48,58.7C96,53,192,43,288,42.7C384,43,480,53,576,64C672,75,768,85,864,112C960,139,1056,181,1152,186.7C1248,192,1344,160,1392,144L1440,128L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"></path>
+  <!-- TOP Wave -->
+  <svg class=\"wave-top\" viewBox=\"0 0 1440 320\" preserveAspectRatio=\"none\">
+    <path fill=\"#FFFBF5\" d=\"M0,64L48,58.7C96,53,192,43,288,42.7C384,43,480,53,576,64C672,75,768,85,864,112C960,139,1056,181,1152,186.7C1248,192,1344,160,1392,144L1440,128L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z\"></path>
   </svg>
 
-  <!-- Floating Balloons -->
-  <div class="balloon" style="left:10%;animation-duration:9s;animation-delay:0s;background:#FFB3B3"></div>
-  <div class="balloon" style="left:80%;animation-duration:7s;animation-delay:1s;background:#AEE2FF"></div>
+  <!-- Clouds -->
+  <div class=\"cloud\" style=\"top:20%;left:-20%;animation-duration:50s\"></div>
+  <div class=\"cloud\" style=\"top:35%;left:-40%;animation-duration:60s\"></div>
+
+  <!-- Balloons -->
+  <div class=\"balloon\" style=\"left:10%;animation-duration:9s;background:#FFB3B3\"></div>
+  <div class=\"balloon\" style=\"left:80%;animation-duration:7s;background:#AEE2FF\"></div>
 
   <!-- Metrics Section -->
-  <section class="metrics-section" id="metrics-root">
-    <div class="metric-card" id="card-total-gen">
+  <section class=\"metrics-section\" id=\"metrics-root\">
+    <div class=\"metric-card\" id=\"card-total-gen\">
       <h2>累計発電量</h2>
-      <div class="number" id="total-generation">0 kWh</div>
-      <p class="sub">🏠 一般家庭 <span id="house-days">0</span> 日分</p>
+      <div class=\"number\" id=\"total-generation\">0 kWh</div>
+      <p class=\"sub\">🏠 一般家庭 <span id=\"house-days\">0</span> 日分</p>
     </div>
-    <div class="metric-card" id="card-co2">
+    <div class=\"metric-card\" id=\"card-co2\">
       <h2>削減された CO₂ 量</h2>
-      <div class="number" id="co2-reduction">0 kg</div>
-      <p class="sub">🌳 木 <span id="tree-equiv">0</span> 本分の吸収量</p>
+      <div class=\"number\" id=\"co2-reduction\">0 kg</div>
+      <p class=\"sub\">🌳 木 <span id=\"tree-equiv\">0</span> 本分の吸収量</p>
     </div>
-    <div class="metric-card" id="card-current-gen">
+    <div class=\"metric-card\" id=\"card-current-gen\">
       <h2>現在の発電量</h2>
-      <div class="number" id="current-generation">0 kW</div>
-      <p class="sub">⚡ 稼働率 <span id="cap-factor">0</span>%</p>
+      <div class=\"number\" id=\"current-generation\">0 kW</div>
+      <p class=\"sub\">⚡ 稼働率 <span id=\"cap-factor\">0</span>%</p>
     </div>
   </section>
 
-  <!-- Business Logic -->
-  <script type="module" src="script.js"></script>
+  <!-- Bottom Wave -->
+  <svg class=\"wave-bot\" viewBox=\"0 0 1440 320\" preserveAspectRatio=\"none\">
+    <path fill=\"#FFFBF5\" d=\"M0,64L48,90.7C96,117,192,171,288,181.3C384,192,480,160,576,149.3C672,139,768,149,864,154.7C960,160,1056,160,1152,160C1248,160,1344,160,1392,160L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z\"></path>
+  </svg>
+
+  <!-- Logic -->
+  <script type=\"module\" src=\"script.js\"></script>
 
   <!-- Palette & Parallax -->
   <script>
-    const root = document.documentElement;
-    function setTimePalette(){
-      const h = new Date().getHours();
-      let grad,cardBg,text;
-      if(h>=5 && h<8){
-        grad = 'linear-gradient(180deg,#FFFBF5 0%,#FFE0B2 100%)';
-        cardBg = 'rgba(255,255,255,0.8)'; text='#4B3E2F';
-      }else if(h>=8 && h<17){
-        grad = 'linear-gradient(180deg,#FDF7EF 0%,#E3F4FF 100%)';
-        cardBg = 'rgba(255,255,255,0.85)'; text='#243B4A';
-      }else if(h>=17 && h<20){
-        grad = 'linear-gradient(180deg,#FFECD2 0%,#FDB99B 100%)';
-        cardBg = 'rgba(255,255,255,0.75)'; text='#452320';
-      }else{
-        grad = 'linear-gradient(180deg,#0f2027 0%, #203a43 50%, #2c5364 100%)';
-        cardBg = 'rgba(255,255,255,0.15)'; text='#ffffff';
-      }
-      root.style.setProperty('--bg-gradient',grad);
-      root.style.setProperty('--card-bg',cardBg);
-      root.style.setProperty('--text-main',text);
+    const root=document.documentElement;
+    function setTimePalette(){const h=new Date().getHours();let g,c,t;
+      if(h>=5&&h<8){g='linear-gradient(180deg,#FFFBF5 0%,#FFE0B2 100%)';c='rgba(255,255,255,0.8)';t='#4B3E2F';}
+      else if(h>=8&&h<17){g='linear-gradient(180deg,#FDF7EF 0%,#E3F4FF 100%)';c='rgba(255,255,255,0.85)';t='#243B4A';}
+      else if(h>=17&&h<20){g='linear-gradient(180deg,#FFECD2 0%,#FDB99B 100%)';c='rgba(255,255,255,0.75)';t='#452320';}
+      else{g='linear-gradient(180deg,#0f2027 0%,#203a43 50%,#2c5364 100%)';c='rgba(255,255,255,0.15)';t='#fff';}
+      root.style.setProperty('--bg-gradient',g);
+      root.style.setProperty('--card-bg',c);
+      root.style.setProperty('--text-main',t);
     }
-    setTimePalette();
-    setInterval(setTimePalette, 1800000);
+    setTimePalette();setInterval(setTimePalette,1800000);
 
-    const metricsSec = document.querySelector('#metrics-root');
+    const waveTop=document.querySelector('.wave-top');
     window.addEventListener('scroll',()=>{
-      const rect = metricsSec.getBoundingClientRect();
-      const y = rect.top / window.innerHeight;
-      document.querySelector('.wave').style.transform = `translateY(${y*20}px)`;
+      const rect=document.getElementById('metrics-root').getBoundingClientRect();
+      const y=rect.top/window.innerHeight;
+      waveTop.style.transform=`translateY(${y*20}px)`;
     });
   </script>
 </body>
