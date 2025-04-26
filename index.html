@@ -1,29 +1,58 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>リアルタイム発電・CO₂削減表示</title>
-  <link rel="stylesheet" href="style.css" />
-  <style>
-    body{margin:0;font-family:sans-serif;color:#fff;text-shadow:0 0 3px #000;transition:background-image 1s ease}
-    #wrapper{max-width:600px;margin:5vh auto;padding:2rem;background:rgba(0,0,0,.55);border-radius:16px}
-    h1{margin-top:0;font-size:1.6rem}
-    .label{font-weight:bold}
-  </style>
-</head>
-<body class="daytime">
-  <div id="wrapper">
-    <h1>数字で見る OFF&nbsp;GRID&nbsp;WORLD</h1>
-    <p>現在時刻: <span id="now-time">--:--:--</span></p>
-    <p>現在の発電量: <span id="current-generation">0 kW</span></p>
-    <p>累計発電量: <span id="total-generation">0 kWh</span></p>
-    <p>削減された CO₂ 量: <span id="co2-reduction">0 kg</span></p>
-    <hr>
-    <p class="label">拠点一覧</p>
-    <ul id="site-list"></ul>
-  </div>
 
-  <script type="module" src="script.js"></script>
+<!DOCTYPE html>
+<html lang=\"ja\">
+<head>
+  <meta charset=\"UTF-8\" />
+  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />
+  <title>Solar Metrics Section</title>
+  <link rel=\"stylesheet\" href=\"design.css\" />
+</head>
+<body>
+  <!-- SVG Wave connecting above section -->
+  <svg class=\"wave\" viewBox=\"0 0 1440 320\" preserveAspectRatio=\"none\">
+    <path fill=\"#FFFBF5\" d=\"M0,64L48,58.7C96,53,192,43,288,42.7C384,43,480,53,576,64C672,75,768,85,864,112C960,139,1056,181,1152,186.7C1248,192,1344,160,1392,144L1440,128L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z\"/>
+  </svg>
+
+  <!-- Floating Balloons -->
+  <div class=\"balloon\" style=\"left:10%;animation-duration:9s;animation-delay:0s;background:#FFB3B3\"></div>
+  <div class=\"balloon\" style=\"left:80%;animation-duration:7s;animation-delay:1s;background:#AEE2FF\"></div>
+
+  <!-- Metrics Section -->
+  <section class=\"metrics-section\" id=\"metrics-root\">
+    <div class=\"metric-card\" id=\"card-total-gen\">
+      <h2>累計発電量</h2>
+      <div class=\"number\" id=\"total-generation\">0 kWh</div>
+    </div>
+    <div class=\"metric-card\" id=\"card-co2\">
+      <h2>削減された CO₂ 量</h2>
+      <div class=\"number\" id=\"co2-reduction\">0 kg</div>
+    </div>
+    <div class=\"metric-card\" id=\"card-current-gen\">
+      <h2>現在の発電量</h2>
+      <div class=\"number\" id=\"current-generation\">0 kW</div>
+    </div>
+  </section>
+
+  <script type=\"module\" src=\"script.js\"></script>
+  <script>
+    const root=document.documentElement;
+    function setTimePalette(){
+      const h=new Date().getHours();
+      let grad,cardBg,text;
+      if(h>=5&&h<8){grad='linear-gradient(180deg,#FFFBF5 0%,#FFE0B2 100%)';cardBg='rgba(255,255,255,0.8)';text='#4B3E2F';}
+      else if(h>=8&&h<17){grad='linear-gradient(180deg,#FDF7EF 0%,#E3F4FF 100%)';cardBg='rgba(255,255,255,0.85)';text='#243B4A';}
+      else if(h>=17&&h<20){grad='linear-gradient(180deg,#FFECD2 0%,#FDB99B 100%)';cardBg='rgba(255,255,255,0.75)';text='#452320';}
+      else{grad='linear-gradient(180deg,#0f2027 0%, #203a43 50%, #2c5364 100%)';cardBg='rgba(255,255,255,0.15)';text='#ffffff';}
+      root.style.setProperty('--bg-gradient',grad);
+      root.style.setProperty('--card-bg',cardBg);
+      root.style.setProperty('--text-main',text);
+    }
+    setTimePalette();setInterval(setTimePalette,1800_000);
+    const metricsSec=document.querySelector('#metrics-root');
+    window.addEventListener('scroll',()=>{
+      const y=metricsSec.getBoundingClientRect().top/window.innerHeight;
+      document.querySelector('.wave').style.transform=`translateY(${y*20}px)`;
+    });
+  </script>
 </body>
 </html>

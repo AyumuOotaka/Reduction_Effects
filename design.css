@@ -1,0 +1,96 @@
+
+/* ---------- Root Palette Variables (updated by JS) ---------- */
+:root {
+  --bg-gradient: linear-gradient(180deg,#FFFBF5 0%,#FEECDC 100%);
+  --card-bg: rgba(255,255,255,0.75);
+  --text-main:#333;
+}
+
+/* ---------- Base Layout ---------- */
+html,body{
+  margin:0;
+  height:100%;
+}
+
+body{
+  background:var(--bg-gradient);
+  overflow-x:hidden;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans JP',sans-serif;
+  color:var(--text-main);
+}
+
+/* ---------- Metrics Section ---------- */
+.metrics-section{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:3rem;
+  position:relative;
+}
+
+.metric-card{
+  position:relative;
+  z-index:2;
+  background:var(--card-bg);
+  backdrop-filter:blur(6px);
+  padding:2rem 3rem;
+  border-radius:24px;
+  box-shadow:0 10px 20px rgba(0,0,0,0.1);
+  text-align:center;
+  max-width:90vw;
+}
+.metric-card h2{
+  margin:0 0 .5rem;
+  font-size:clamp(1.1rem,6vw,1.8rem);
+  font-weight:600;
+  color:var(--text-main);
+}
+.metric-card .number{
+  font-size:clamp(2rem,10vw,4rem);
+  font-weight:800;
+  letter-spacing:1px;
+  color:var(--text-main);
+}
+
+/* ---------- Decorative Wave ---------- */
+.wave{
+  position:absolute;
+  left:0;
+  right:0;
+  width:100%;
+  height:auto;
+  z-index:0;
+  animation:floatWave 20s linear infinite;
+}
+@keyframes floatWave{
+  from{transform:translateY(0)}
+  to{transform:translateY(-50%)}}
+
+/* ---------- Floating Balloons ---------- */
+.balloon{
+  position:absolute;
+  width:60px;
+  height:80px;
+  border-radius:50% 50% 50% 50%/60% 60% 40% 40%;
+  box-shadow:inset -4px -8px 10px rgba(0,0,0,0.15);
+  animation:float 8s ease-in-out infinite;
+}
+.balloon:after{
+  content:"";position:absolute;
+  bottom:-30px;
+  left:50%;
+  width:2px;height:30px;
+  background:#555;
+  transform:translateX(-50%);
+}
+@keyframes float{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-25px)}
+}
+
+/* ---------- Responsive Tweak ---------- */
+@media (max-width:600px){
+  .metric-card{padding:1.5rem}
+}
